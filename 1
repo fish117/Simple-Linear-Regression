@@ -1,0 +1,109 @@
+################################################
+# Main Economic Indicators - SLR example
+################################################
+
+
+mydata <- read.csv(file.choose(), header=TRUE)
+
+
+print(mydata)
+
+str(mydata)
+
+plot(sales ~ dwelling.permits, data=mydata, pch=16) # graph the response variable vs. the explanatory variable
+lines(lowess(mydata$dwelling.permits, mydata$sales, delta=0.1), col="red")
+
+# Add a smoothed curve through the data (locally weighted regression)
+plot(sales ~ dwelling.permits, data=mydata, pch=16) # y ~ x
+x1 <- mydata$dwelling.permits[order(mydata$dwelling.permits)] #put the x-values in order
+y1 <- mydata$sales[order(mydata$dwelling.permits)] # put the y-values in order based on the order of the x-values
+lines(lowess(x1, y1, delta=0.1), col="red")
+
+#Try some different values for delta, what do you see?
+
+plot(sales ~ dwelling.permits, data=mydata, pch=16)
+x1 <- mydata$dwelling.permits[order(mydata$dwelling.permits)]
+y1 <- mydata$sales[order(mydata$dwelling.permits)]
+lines(lowess(x1, y1, delta=50), col="red")
+
+
+plot(sales ~ dwelling.permits, data=mydata, pch=16)
+x1 <- mydata$dwelling.permits[order(mydata$dwelling.permits)]
+y1 <- mydata$sales[order(mydata$dwelling.permits)]
+lines(lowess(x1, y1, delta=100), col="red")
+
+
+# Try fitting a linear model so that you can make the residual plot and look at it
+z1 <- lm(sales ~ dwelling.permits, data=mydata)
+resid1 <- resid(z1)
+resid1
+
+predict1 <- predict(z1)
+predict1
+
+
+# residual plot
+plot(resid1 ~ predict1, pch=16) 
+
+# residual plot with a line at residuals = 0
+plot(resid1 ~ predict1, pch=16)
+abline(0,0, lty=2) #line type = 2
+
+# Is this linear?
+
+
+
+# Let's try another model
+
+plot(sales ~ production, data=mydata, pch=16)
+x2 <- mydata$production[order(mydata$production)]
+y2 <- mydata$sales[order(mydata$production)]
+lines(lowess(x2, y2, delta=0.1), col="red")
+
+
+z2 <- lm(sales ~ production, data=mydata)
+resid2 <- resid(z2)
+resid2
+
+predict2 <- predict(z2)
+predict2
+
+# Residual plot
+plot(resid2 ~ predict2, pch=16)
+abline(0,0, lty=2)
+
+# Use the residual plot to assess Assumption #2: Equal variance
+
+
+
+
+# R provides you with some plots to look at model fit
+plot(z2)
+
+# Check Assumption #3: Normality of errors
+hist(resid2)
+hist(resid2, breaks = seq(-30, 40, by=5))
+shapiro.test(resid2) #Shapiro-Wilk test for normality of residuals
+
+# Normality plot
+qqnorm(resid2, ylab= "residuals", xlab = "Normal scores", pch=16)
+qqline(resid2)
+
+
+# Is the regression significant?
+
+anova(z2) # This gives the analysis of variance table with the F-test for the significance of the regression
+
+summary(z2) # This gives the co-efficients and t tests to see if they differ from zero. The test of the regression is at the bottom (with the F-statistic) and the r-squared value is given. However, if the regression is not significant, there is no value in looking at the r-squared value.
+
+# Note the p-value from the anova table and for the t-test for the co-efficient of the x-variable. What would explain this observation?
+ 
+# make a graph of the data with the regression line
+plot(sales ~ production, data=mydata, pch=16)
+abline(z2)
+ 
+ 
+ 
+ 
+
+
